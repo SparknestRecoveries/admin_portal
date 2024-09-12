@@ -1,0 +1,8 @@
+requests
+google-cloud-storage
+google-cloud-firestore
+Flask
+python-dotenv
+aiohttp
+openai
+pyrebase
