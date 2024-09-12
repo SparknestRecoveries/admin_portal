@@ -1,5 +1,14 @@
 from scripts.firestore_utils import read_collection, write_document
 from datetime import datetime
+from dotenv import load_dotenv
+import json
+import os
+
+# Load the .env file
+load_dotenv()
+
+# Get the credentials JSON string from the environment variable
+PRESSONE_TOKEN = os.getenv("PRESSONE_TOKEN")
 
 def post_call(lead_args):
     """
@@ -8,7 +17,7 @@ def post_call(lead_args):
     url = "https://api.pressone.co/api/third-party/chatterwave/text-to-speech/"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer pk_578161NyyRRLsPoO40jspeTR1bIGA_d28fa8e31bdb11f59b9766c816e17df26d136e22d123d5574d6651f558dacf092fe46ae23a4c9c10afdfd9d977cf3ee86dbae4cef409c8a3007a8afe13ab89ed",  # Replace with your actual API key
+        "Authorization": PRESSONE_TOKEN,  # Replace with your actual API key
     }
 
     # Prepare the API request payload
