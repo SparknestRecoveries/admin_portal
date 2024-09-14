@@ -5,7 +5,7 @@ from scripts.firestore_utils import write_document, read_collection, query_colle
 import requests
 
 # Base URL for your Flask API
-BASE_URL = "http://localhost:5000"
+BASE_URL = "https://outbound-bot.onrender.com"
 
 # Initialize Streamlit app layout
 st.title("Debt Collection Management Dashboard")
