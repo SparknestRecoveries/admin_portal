@@ -87,8 +87,18 @@ def upload_csv_to_firestore(file):
 
             # Clean column names: trim and replace spaces with underscores
             df.columns = df.columns.str.strip().str.replace(' ', '_')
-            df['updated_amount_deliquent'] = df['updated_amount_deliquent'].str.strip().str.replace(',', '').astype(float)
-            df['Loan_ID'] = df['Loan_ID'].astype(int).astype(str)
+            df['updated_amount_deliquent'] = df['updated_amount_deliquent'].astype(str).str.strip().str.replace(',', '')
+            df['updated_amount_deliquent'] = pd.to_numeric(df['updated_amount_deliquent'], errors='coerce').fillna(0)
+            df['Loan_ID'] = pd.to_numeric(df['Loan_ID'], errors='coerce').fillna(0).astype(int).astype(str)
+            df['Contact_1'] = pd.to_numeric(df['Contact_1'], errors='coerce').fillna(0).astype(int).astype(str)
+            df['Contact_2'] = pd.to_numeric(df['Contact_1'], errors='coerce').fillna(0).astype(int).astype(str)
+
+
+            for column in df.columns:
+                #df[column] = df[column].apply(lambda x: f"'{x}" if x.isnumeric() and len(x) > 10 else x)
+                df[column] = df[column].apply(lambda x: x.split('.')[0] if isinstance(x, str) and '.' in x else x)
+                
+
 
             # Log the DataFrame
             st.write("CSV Data Preview:")
@@ -173,6 +183,7 @@ def log_action(action, response):
 # File uploader for CSV
 uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
 
+
 # Add buttons for each operation
 if st.button("Upload"):
     upload_csv_to_firestore(uploaded_file)
@@ -192,9 +203,11 @@ if st.button("Follow-up"):
 # File uploader for payments CSV
 uploaded_payment_file = st.file_uploader("Upload Payments CSV", type=["csv"])
 
+
 # Add a button for uploading payments
 if st.button("Upload Payments"):
     upload_payments_to_firestore(uploaded_payment_file)
+
 
 # Add a button to update the botfile
 if st.button("Update Botfile"):
