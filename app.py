@@ -75,8 +75,46 @@ def upload_payments_to_firestore(file):
             st.error(f"An error occurred while processing payments: {e}")
             log_action("Payments Upload", f"Error: {e}")
 
+# Function to upload CSV directly to Firestore
+def upload_contacted(file):
+    if file:
+        try:
+            # Read the CSV file into a pandas DataFrame
+            df = pd.read_csv(file)
 
+            # Clean column names: trim and replace spaces with underscores
+            df.columns = df.columns.str.strip().str.replace(' ', '_')
+            df['Recipient_Number'] = pd.to_numeric(df['Recipient_Number'], errors='coerce').fillna(0).astype(int).astype(str)
 
+            for column in df.columns:
+                df[column] = df[column].apply(lambda x: x.split('.')[0] if isinstance(x, str) and '.' in x else x)
+
+            # Log the DataFrame
+            st.write("CSV Data Preview:")
+            st.write(df)
+
+            # Filter rows where 'status' is 'delivered'
+            delivered_df = df[df['Status'].str.lower() == 'delivered']
+
+            # Upload each 'delivered' phone number to Firestore
+            for index, row in delivered_df.iterrows():
+                document_id = str(row['Recipient_Number'])
+                
+                # Prepare data with today's date
+                data = {
+                    'phone_number': document_id,
+                    'date_added': datetime.now().strftime('%Y-%m-%d')
+                }
+
+                # Write each phone number to the specified Firestore collection
+                write_document('contacted_numbers', document_id, data)
+
+            st.success(f"Uploaded {len(delivered_df)} 'delivered' records to Firestore successfully.")
+            log_action("Upload", f"Uploaded {len(delivered_df)} 'delivered' records to Firestore successfully.")
+
+        except Exception as e:
+            st.error(f"An error occurred while uploading CSV to Firestore: {e}")
+            log_action("Upload", f"Error: {e}")
 
 # Function to upload CSV directly to Firestore
 def upload_csv_to_firestore(file):
@@ -212,6 +250,14 @@ if st.button("Upload Payments"):
 # Add a button to update the botfile
 if st.button("Update Botfile"):
     update_botfile()
+
+# File uploader for payments CSV
+uploaded_contacted_file = st.file_uploader("Upload contacted CSV", type=["csv"])
+
+
+# Add a button for uploading payments
+if st.button("Upload contacted"):
+    upload_contacted(uploaded_contacted_file)
 
 
 # Monitor logs
