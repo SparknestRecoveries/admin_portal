@@ -208,3 +208,78 @@ if st.button("Upload contacted"):
 # Monitor logs
 st.sidebar.title("Monitor")
 st.sidebar.text("Logs will appear here as actions are performed.")
+
+
+
+
+# Function to call initialization endpoint
+def initialize():
+    try:
+        init_response = requests.get(f"{BASE_URL}/initialize")
+        if init_response.status_code == 200:
+            st.success("Initialization script executed successfully.")
+            st.write(init_response.json())
+        else:
+            st.error("Error executing initialization script.")
+            st.write(init_response.json())
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+
+# Function to call whatsapp endpoint
+def whatsapp():
+    try:
+        init_response = requests.get(f"{BASE_URL}/whatsapp")
+        if init_response.status_code == 200:
+            st.success("Initialization script executed successfully.")
+            st.write(init_response.json())
+        else:
+            st.error("Error executing initialization script.")
+            st.write(init_response.json())
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+
+# Function to call fetch_status endpoint
+def check_status():
+    try:
+        status_response = requests.get(f"{BASE_URL}/fetch_status")
+        if status_response.status_code == 200:
+            st.success("Status check completed successfully.")
+            st.write(status_response.json())
+        else:
+            st.error("Error checking status.")
+            st.write(status_response.json())
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+
+# Function to call follow_up endpoint
+def follow_up():
+    try:
+        followup_response = requests.get(f"{BASE_URL}/follow_up")
+        if followup_response.status_code == 200:
+            st.success("Follow-up script executed successfully.")
+            st.write(followup_response.json())
+        else:
+            st.error("Error executing follow-up script.")
+            st.write(followup_response.json())
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+
+# Function to log actions and responses
+def log_action(action, response):
+    st.sidebar.text(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: {action}")
+    st.sidebar.text(f"Response: {response}")
+
+
+if st.button("Initialization"):
+    initialize()
+
+if st.button("Whatsapp"):
+    whatsapp()
+
+if st.button("Check Status"):
+    check_status()
+
+if st.button("Follow-up"):
+    follow_up()
+
+
